@@ -15,6 +15,10 @@ function error_exit {
 }
 trap 'error_exit ${LINENO}' ERR
 
+set -o errexit
+set -o pipefail
+set -o nounset
+
 function sideload_boot()
 {
   echo "Connect phone in recovery mode with sideload option on!"
