@@ -200,7 +200,7 @@ function install_or_update_fdroid()
     fi
   else
     local fdroid_version=$(adb shell dumpsys package $fdroid_name | awk -F'[[:space:]=]*' '$2 == "versionCode" {print $3}')
-    if [[ $fdroid_version != "101050" ]]
+    if (( $fdroid_version < 101050 ))
     then
       read -p "Do you wish to update FDroid [Y/n] ? "
       if [[ ${REPLY,,} == "n" ]]
@@ -230,6 +230,45 @@ function install_or_update_fdroid()
   echo "-= FDroid will be available after the next reboot =-"
 }
 
+function install_or_update_app()
+{
+  local nick=$1
+  local name=$2
+  local version=$3
+  local url=$4
+
+  local installed_version=$(adb shell dumpsys package $name | awk -F'[[:space:]=]*' '$2 == "versionCode" {print $3}')
+  if [[ -z $installed_version ]]
+  then
+    read -p "Do you wish to install $nick [Y/n] ? "
+    if [[ ${REPLY,,} == "n" ]]
+    then
+      return
+    fi
+  elif (( $installed_version < $version ))
+  then
+    read -p "Do you wish to update $nick [Y/n] ? "
+    if [[ ${REPLY,,} == "n" ]]
+    then
+      return
+    fi
+  else
+    echo "$nick is up-to-date"
+    return
+  fi
+
+  local tmpfile=$(mktemp --tmpdir=/var/tmp "${nick}_XXXXXXXXXXX.apk")
+  wget -O "$tmpfile" $url
+  adb install "$tmpfile"
+  rm -f "$tmpfile"
+}
+
+function install_or_update_apps()
+{
+  install_or_update_app OsmAnd~ net.osmand.plus 247 https://f-droid.org/repo/net.osmand.plus_247.apk
+  install_or_update_app DAVdroid at.bitfire.davdroid 123 https://f-droid.org/repo/at.bitfire.davdroid_123.apk
+}
+
 function main()
 {
   init
@@ -238,6 +277,7 @@ function main()
   flash_boot
   adb wait-for-device
   install_or_update_fdroid
+  install_or_update_apps
 }
 
 main
