@@ -96,7 +96,6 @@ function phone_information() {
 
 function download_image() {
   local i=0
-  echo -n $fp_version | od -bc
   while (( i < ${#fp_open_versions[@]} ))
   do
     if [[ ${fp_open_versions[$i]} == $fp_version ]]
