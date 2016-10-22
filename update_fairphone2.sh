@@ -188,12 +188,44 @@ function flash_boot() {
   echo "-= Done. Your phone should now be rebooting in version $fp_next_version. =-"
 }
 
+function install_or_update_fdroid()
+{
+  local fdroid_name='org.fdroid.fdroid'
+  if ! adb shell dumpsys package $fdroid_name >/dev/null
+  then
+    read -p "Do you wish to install FDroid [Y/n] ? "
+    if [[ ${REPLY,,} == "n" ]]
+    then
+      return
+    fi
+  else
+    local fdroid_version=$(adb shell dumpsys package $fdroid_name | awk -F'[[:space:]=]*' '$2 == "versionName" {print $3}')
+    if [[ $fdroid_version != "0.100.1" ]]
+    then
+      read -p "Do you wish to update FDroid [Y/n] ? "
+      if [[ ${REPLY,,} == "n" ]]
+      then
+        return
+      fi
+    else
+      echo "FDroid is on the latest version."
+      return
+    fi
+  fi
+  echo "-= Downloading latest fdroid version =-"
+  local fdroid_apk="/var/tmp/fdroid.apk"
+  wget --continue --output-document $fdroid_apk https://f-droid.org/FDroid.apk
+  adb install $fdroid_apk
+}
+
 function main()
 {
   init
   phone_information
   download_image
   flash_boot
+  adb wait-for-device
+  install_or_update_fdroid
 }
 
 main
