@@ -199,8 +199,8 @@ function install_or_update_fdroid()
       return
     fi
   else
-    local fdroid_version=$(adb shell dumpsys package $fdroid_name | awk -F'[[:space:]=]*' '$2 == "versionName" {print $3}')
-    if [[ $fdroid_version != "0.100.1" ]]
+    local fdroid_version=$(adb shell dumpsys package $fdroid_name | awk -F'[[:space:]=]*' '$2 == "versionCode" {print $3}')
+    if [[ $fdroid_version != "101050" ]]
     then
       read -p "Do you wish to update FDroid [Y/n] ? "
       if [[ ${REPLY,,} == "n" ]]
@@ -216,7 +216,7 @@ function install_or_update_fdroid()
   fi
   echo "-= Downloading latest fdroid version =-"
   local fdroid_apk="/var/tmp/fdroid.apk"
-  wget --continue --output-document $fdroid_apk https://f-droid.org/FDroid.apk
+  wget --continue --output-document $fdroid_apk https://f-droid.org/repo/org.fdroid.fdroid_101050.apk
 
   echo "-= Making fdroid a system app =-"
   echo "   In order to do this, make sure that you have enabled debugging option"
