@@ -268,7 +268,9 @@ function install_or_update_apps()
 {
   install_or_update_app OsmAnd~ net.osmand.plus 247 https://f-droid.org/repo/net.osmand.plus_247.apk
   install_or_update_app DAVdroid at.bitfire.davdroid 123 https://f-droid.org/repo/at.bitfire.davdroid_123.apk
-  install_or_update_app K-9Mail com.fsck.k9 23113 https://f-droid.org/repo/com.fsck.k9_23113.apk
+  install_or_update_app "K-9 Mail" com.fsck.k9 23113 https://f-droid.org/repo/com.fsck.k9_23113.apk
+  install_or_update_app "IceCatMobile web browser" org.gnu.icecat 380800 https://f-droid.org/repo/org.gnu.icecat_380800.apk
+  install_or_update_app Diktofon kaljurand_at_gmail_dot_com.diktofon 983 https://f-droid.org/repo/kaljurand_at_gmail_dot_com.diktofon_983.apk
 }
 
 function install_trusted_certs()
