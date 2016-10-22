@@ -74,11 +74,24 @@ function phone_information() {
   then
     fp_version=$(adb -s $serial shell "getprop ro.build.display.id" | dos2unix)
     fp_version=${fp_version##* }
+    encrypted=$(adb -s $serial shell "getprop ro.crypto.state" | dos2unix)
+    if [[ $encrypted == "unencrypted" ]]
+    then
+      encrypted='false'
+    else
+      encrypted='true'
+    fi
     echo "-= You are currently running OS version $fp_version =-"
+    if [[ $encrypted == 'true' ]]
+    then
+      echo "-= Your phone is encrypted. =-"
+    fi
     echo "prev_detected_fp_version=$fp_version" > "$sh_file"
+    echo "prev_detected_encrypted=$encrypted" > "$sh_file"
   else
     # see if we can find a previous detected version
     fp_version=${prev_detected_fp_version:-}
+    encrypted=${prev_detected_encrypted:-}
     if [[ -z $fp_version ]]
     then
       echo "-= Unable to find current fairphone version. =-"
