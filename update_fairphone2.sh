@@ -41,7 +41,7 @@ fp2-sibon-16.10.0 https://storage.googleapis.com/fairphone-updates/d7c72422-62fa
 fp2-sibon-16.09.0 - - - https://forum.fairphone.com/t/fairphone-open-16-09-0-is-now-available/22464
 fp2-sibon-16.08.0 http://storage.googleapis.com/fairphone-updates/fp2-sibon-16.08.0-manual-userdebug.zip 855ee24f97ca85cc3219a9bc67a8967d e2270cf62d507abba87f824e551af10547761c52041b111641235713590407d5 https://forum.fairphone.com/t/fairphone-open-16-08-0-is-now-available/21973
 fp2-sibon-16.07.1 - - - https://forum.fairphone.com/t/fp-open-os-16-07-is-now-available/21064
-open_16.04.0 - - - https://forum.fairphone.com/t/fairphone-2-open-os-is-available/17208
+fp2-sibon-16.04.0 - - - https://forum.fairphone.com/t/fairphone-2-open-os-is-available/17208
 EOL
 
   fp_open_versions=("open_16.04.0" "fp2-sibon-16.07.1" "fp2-sibon-16.08.0" "fp2-sibon-16.09.0" "fp2-sibon-16.10.0")
