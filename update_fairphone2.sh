@@ -19,6 +19,7 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
+download_dir="/var/tmp/fairphone_downloads"
 declare -A update_url
 declare -A update_md5
 declare -A update_sha2
@@ -32,7 +33,7 @@ function init()
     update_url[$version]=$url
     update_md5[$version]=$md5
     update_sha2[$version]=$sha2
-    update_announce[$version]=$announce
+    update_announce_url[$version]=$announce
   done << EOL
 open_16.08.0 http://storage.googleapis.com/fairphone-updates/fp2-sibon-16.08.0-manual-userdebug.zip 855ee24f97ca85cc3219a9bc67a8967d e2270cf62d507abba87f824e551af10547761c52041b111641235713590407d5 https://forum.fairphone.com/t/fairphone-open-16-08-0-is-now-available/21973
 open_16.09.0 - - - https://forum.fairphone.com/t/fairphone-open-16-09-0-is-now-available/22464
@@ -40,6 +41,8 @@ open_16.10.0 https://storage.googleapis.com/fairphone-updates/d7c72422-62fa-4a19
 open_16.07.1 - - - https://forum.fairphone.com/t/fp-open-os-16-07-is-now-available/21064
 open_16.04.0 - - - https://forum.fairphone.com/t/fairphone-2-open-os-is-available/17208
 EOL
+
+  mkdir -p "$download_dir"
 }
 
 function sideload_boot()
@@ -64,6 +67,26 @@ function sideload_boot()
   sudo rm -f $fileName
 
   echo "-= Done! Reboot the phone =-"
+}
+
+function download_image() {
+  local version=$1
+  local url=${update_url[$version]}
+  local filename="$download_dir/${url##*/}"
+
+  echo "-= Downloading the Fairphone image for $version to $download_dir =-"
+
+  wget --continue --output-document "$filename" $url
+
+  echo "-= Checking the integrity of the downloaded image =-"
+  echo "${update_md5[$version]} $filename" > "$filename.md5"
+  echo "${update_sha2[$version]} $filename" > "$filename.sha2"
+  echo -n "MD5 sum check: "
+  md5sum --check "$filename.md5"
+  echo -n "SHA256 sum check: "
+  sha256sum --check "$filename.sha2"
+
+  echo "-= All is OK. You can continue to flash this image =-"
 }
 
 function flash_rooted_boot() {
@@ -105,6 +128,7 @@ function flash_rooted_boot() {
 function main()
 {
   init
+  download_image "open_16.10.0"
 }
 
 main
