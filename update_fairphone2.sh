@@ -188,12 +188,56 @@ function flash_boot() {
   echo "-= Done. Your phone should now be rebooting in version $fp_next_version. =-"
 }
 
+function install_or_update_fdroid()
+{
+  local fdroid_name='org.fdroid.fdroid'
+  if ! adb shell dumpsys package $fdroid_name >/dev/null
+  then
+    read -p "Do you wish to install FDroid [Y/n] ? "
+    if [[ ${REPLY,,} == "n" ]]
+    then
+      return
+    fi
+  else
+    local fdroid_version=$(adb shell dumpsys package $fdroid_name | awk -F'[[:space:]=]*' '$2 == "versionCode" {print $3}')
+    if [[ $fdroid_version != "101050" ]]
+    then
+      read -p "Do you wish to update FDroid [Y/n] ? "
+      if [[ ${REPLY,,} == "n" ]]
+      then
+        return
+      fi
+      # removing fdroid if installed as normal app
+      adb uninstall org.fdroid.fdroid || true
+    else
+      echo "FDroid is on the latest version."
+      return
+    fi
+  fi
+  echo "-= Downloading latest fdroid version =-"
+  local fdroid_apk="/var/tmp/fdroid.apk"
+  wget --continue --output-document $fdroid_apk https://f-droid.org/repo/org.fdroid.fdroid_101050.apk
+
+  echo "-= Making fdroid a system app =-"
+  echo "   In order to do this, make sure that you have enabled debugging option"
+  echo "   and that in there, ADB can obtain root."
+  read -p "Press <enter> when all is setup for ADB root access."
+  adb push $fdroid_apk /sdcard/FDroid.apk
+  adb shell su -c \'mount -o rw,remount /system\'
+  adb shell su -c \'mv /sdcard/FDroid.apk /system/priv-app/\'
+  adb shell su -c \'chmod 644 /system/priv-app/FDroid.apk\'
+  adb shell su -c \'mount -o ro,remount /system\'
+  echo "-= FDroid will be available after the next reboot =-"
+}
+
 function main()
 {
   init
   phone_information
   download_image
   flash_boot
+  adb wait-for-device
+  install_or_update_fdroid
 }
 
 main
