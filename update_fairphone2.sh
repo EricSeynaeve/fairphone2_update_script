@@ -21,6 +21,7 @@ set -o nounset
 
 download_dir="/var/tmp/fairphone_downloads"
 sh_file="$HOME/.fairphone2_updatesh"
+config_dir="$HOME/.fairphone2_updater"
 declare -A update_url
 declare -A update_md5
 declare -A update_sha2
@@ -269,6 +270,32 @@ function install_or_update_apps()
   install_or_update_app DAVdroid at.bitfire.davdroid 123 https://f-droid.org/repo/at.bitfire.davdroid_123.apk
 }
 
+function install_trusted_certs()
+{
+  local certs_dir="$config_dir/trusted_cert"
+
+  local hash
+  local tmpfile
+  echo "-= Install trusted system certs =-"
+  for crt in $(ls $certs_dir/*.crt)
+  do
+    hash=$(openssl x509 -inform PEM -subject_hash_old -in $crt | head -n 1)
+    echo "   Installing cert ${hash}.0"
+    tmpfile=$(mktemp --tmpdir=/var/tmp "cert_XXXXXXXXXXX.crt")
+    cat $crt > $tmpfile
+    openssl x509 -inform PEM -text -in $crt -out /dev/null >> $tmpfile
+    adb shell rm -rf /sdcard/certs
+    adb shell mkdir /sdcard/certs
+    adb push $tmpfile /sdcard/certs/${hash}.0
+    adb shell su -c \'mount -o rw,remount /system\'
+    adb shell su -c \'mv /sdcard/certs/${hash}.0 /system/etc/security/cacerts/\'
+    adb shell su -c \'chmod 644 /system/etc/security/cacerts/${hash}.0\'
+    adb shell su -c \'mount -o ro,remount /system\'
+    rm -f $tmpfile
+  done
+  echo "-= System certs will be available after next reboot =-"
+}
+
 function main()
 {
   init
@@ -278,6 +305,7 @@ function main()
   adb wait-for-device
   install_or_update_fdroid
   install_or_update_apps
+  install_trusted_certs
 }
 
 main
