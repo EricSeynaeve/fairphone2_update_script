@@ -189,6 +189,33 @@ function flash_boot() {
   echo "-= Done. Your phone should now be rebooting in version $fp_next_version. =-"
 }
 
+function install_xposed()
+{
+  read -p "Do you wish to install the xposed framework [Y/n] ?"
+  if [[ ${REPLY,,} == 'n' ]]
+  then
+    return
+  fi
+  echo "-= Downloading zip file to sdcard =-"
+  curl --output /var/tmp/xposed.zip http://dl-xda.xposed.info/framework/sdk22/arm/xposed-v86-sdk22-arm.zip
+  adb push /var/tmp/xposed.zip /sdcard/xposed_latest.zip
+  echo "-= Rebooting into recovery rom (Team Win Recovery Project aka TWRP) =-"
+  echo "   If this doesn't work:"
+  echo "   - Power off the phone."
+  echo "   - Startup by pressing the Power and the Volume Up button simulatinously."
+  echo "   - Keep these pressed until TWRP is shown."
+  adb reboot recovery
+  echo "-= Install the framwork =-"
+  echo "   - On the main menu, select Install."
+  echo "   - select xposed_latest.zip from the interal sdcard from the sources to flash."
+  echo "   - disable Zip file signature verfication."
+  echo "   - reboot."
+  adb wait-for-device
+  read -p "Press <enter> when the bootup is completed."
+  echo "-= You need the Xposed Installer so answer Y on the next question ! =-"
+  install_or_update_app "Xposed Installer" de.robv.android.xposed.installer 38 http://forum.xda-developers.com/attachment.php?attachmentid=3905816&d=1476647059
+}
+
 function install_or_update_fdroid()
 {
   local fdroid_name='org.fdroid.fdroid'
@@ -305,6 +332,7 @@ function main()
   phone_information
   download_image
   flash_boot
+  install_xposed
   adb wait-for-device
   install_or_update_fdroid
   install_or_update_apps
