@@ -37,6 +37,9 @@ function init()
     update_sha2[$version]=$sha2
     update_announce_url[$version]=$announce
   done << EOL
+fp2-sibon-17.01.0 https://storage.googleapis.com/fairphone-updates/90aa103f-4296-4777-ace9-bdd43c6790ce/fp2-sibon-17.01.0-manual-userdebug.zip 82e9ffadd9add5f73d2dfe2bec90867e 4b8310a4bd0ed6a137c2ef910ad1a7498b92955d50ae4bd48ebdae2036042eae https://forum.fairphone.com/t/fairphone-open-17-01-0-is-now-available-beware-with-encryption/26269
+fp2-sibon-16.12.0 https://storage.googleapis.com/fairphone-updates/a3f25298-dd8e-430a-a198-2be103ae710c/fp2-sibon-16.12.0-manual-userdebug.zip c210a5573a8593429c5ea345534f4770 84de6e265419c001c2de6c1251c3139f852cdef5586dda7bb499434e673ad00f https://forum.fairphone.com/t/fairphone-open-16-12-0-is-now-available/24895
+fp2-sibon-16.11.0 https://storage.googleapis.com/fairphone-updates/3e8ac604-3cfd-41c1-8fd5-5fd6158e8a37/fp2-sibon-16.11.0-manual-userdebug.zip e4de7faca12a4160efc972c8ccb91c0e 763275aa10c83425aac343d604d3ce28a7baaf564ee58b2b7dc6dc2225a0878f https://forum.fairphone.com/t/fairphone-open-16-11-0-release/24005
 fp2-sibon-16.10.0 https://storage.googleapis.com/fairphone-updates/d7c72422-62fa-4a19-80af-a2fdd4bee25e/fp2-sibon-16.10.0-manual-userdebug.zip 6481730bc6588507f7b9de63db9c3a67 d2a69742aff49ef00db4a8dcd984fdfc6c9c3723279db21a20a55289d4411e61 https://forum.fairphone.com/t/fairphone-open-16-10-0-is-now-available/22849
 fp2-sibon-16.09.0 - - - https://forum.fairphone.com/t/fairphone-open-16-09-0-is-now-available/22464
 fp2-sibon-16.08.0 http://storage.googleapis.com/fairphone-updates/fp2-sibon-16.08.0-manual-userdebug.zip 855ee24f97ca85cc3219a9bc67a8967d e2270cf62d507abba87f824e551af10547761c52041b111641235713590407d5 https://forum.fairphone.com/t/fairphone-open-16-08-0-is-now-available/21973
@@ -44,7 +47,7 @@ fp2-sibon-16.07.1 - - - https://forum.fairphone.com/t/fp-open-os-16-07-is-now-av
 fp2-sibon-16.04.0 - - - https://forum.fairphone.com/t/fairphone-2-open-os-is-available/17208
 EOL
 
-  fp_open_versions=("open_16.04.0" "fp2-sibon-16.07.1" "fp2-sibon-16.08.0" "fp2-sibon-16.09.0" "fp2-sibon-16.10.0")
+  fp_open_versions=("open_16.04.0" "fp2-sibon-16.07.1" "fp2-sibon-16.08.0" "fp2-sibon-16.09.0" "fp2-sibon-16.10.0" "fp2-sibon-16.11.0" "fp2-sibon-16.12.0" "fp2-sibon-17.01.0")
 
   mkdir -p "$download_dir"
   if [[ -f "$sh_file" ]]
@@ -111,20 +114,7 @@ function download_image() {
     echo "-= You are running the latest OS version =-"
     return
   fi
-  while (( i < ${#fp_open_versions[@]} ))
-  do
-    if [[ ${fp_open_versions[$i]} == $fp_version ]]
-    then
-      fp_next_version=${fp_open_versions[$i+1]}
-      break
-    fi
-    i=$(( i + 1 ))
-  done
-  if [[ -z $fp_next_version ]]
-  then
-    echo "-= You are running an unknown OS version =-"
-    exit 1
-  fi
+  fp_next_version=${fp_open_versions[-1]}
 
   local url=${update_url[$fp_next_version]}
   image_filename="$download_dir/${url##*/}"
@@ -197,7 +187,7 @@ function install_xposed()
     return
   fi
   echo "-= Downloading zip file to sdcard =-"
-  curl --output /var/tmp/xposed.zip http://dl-xda.xposed.info/framework/sdk22/arm/xposed-v86-sdk22-arm.zip
+  curl --output /var/tmp/xposed.zip http://dl-xda.xposed.info/framework/sdk22/arm/xposed-v87-sdk22-arm.zip
   adb push /var/tmp/xposed.zip /sdcard/xposed_latest.zip
   echo "-= Rebooting into recovery rom (Team Win Recovery Project aka TWRP) =-"
   echo "   If this doesn't work:"
@@ -205,7 +195,7 @@ function install_xposed()
   echo "   - Startup by pressing the Power and the Volume Up button simulatinously."
   echo "   - Keep these pressed until TWRP is shown."
   adb reboot recovery
-  echo "-= Install the framwork =-"
+  echo "-= Install the framework =-"
   echo "   - On the main menu, select Install."
   echo "   - select xposed_latest.zip from the interal sdcard from the sources to flash."
   echo "   - disable Zip file signature verfication."
@@ -213,7 +203,8 @@ function install_xposed()
   adb wait-for-device
   read -p "Press <enter> when the bootup is completed."
   echo "-= You need the Xposed Installer so answer Y on the next question ! =-"
-  install_or_update_app "Xposed Installer" de.robv.android.xposed.installer 38 http://forum.xda-developers.com/attachment.php?attachmentid=3905816&d=1476647059
+  # See also http://forum.xda-developers.com/showthread.php?t=3034811 for latest version.
+  install_or_update_app "Xposed Installer" de.robv.android.xposed.installer 39 http://forum.xda-developers.com/attachment.php?attachmentid=3921508&d=1477916609
 }
 
 function install_or_update_fdroid()
@@ -228,7 +219,7 @@ function install_or_update_fdroid()
     fi
   else
     local fdroid_version=$(adb shell dumpsys package $fdroid_name | awk -F'[[:space:]=]*' '$2 == "versionCode" {print $3}')
-    if (( $fdroid_version < 101050 ))
+    if (( $fdroid_version < 102050 ))
     then
       read -p "Do you wish to update FDroid [Y/n] ? "
       if [[ ${REPLY,,} == "n" ]]
@@ -244,7 +235,7 @@ function install_or_update_fdroid()
   fi
   echo "-= Downloading latest fdroid version =-"
   local fdroid_apk="/var/tmp/fdroid.apk"
-  wget --continue --output-document $fdroid_apk https://f-droid.org/repo/org.fdroid.fdroid_101050.apk
+  wget --continue --output-document $fdroid_apk https://f-droid.org/repo/org.fdroid.fdroid_102050.apk
 
   echo "-= Making fdroid a system app =-"
   echo "   In order to do this, make sure that you have enabled debugging option"
