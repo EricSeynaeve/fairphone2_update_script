@@ -179,11 +179,12 @@ function flash_boot() {
   echo "-= Upgrading your OS from $fp_version to $fp_next_version. =-"
   ./flash.sh
   echo "-= Done. Your phone should now be rebooting in version $fp_next_version. =-"
+  read -p "Press <enter> when the reboot is finished."
 }
 
 function install_xposed()
 {
-  read -p "Do you wish to install the xposed framework [Y/n] ?"
+  read -p "Do you wish to install the Xposed framework [Y/n] ?"
   if [[ ${REPLY,,} == 'n' ]]
   then
     return
