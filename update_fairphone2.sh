@@ -37,6 +37,8 @@ function init()
     update_sha2[$version]=$sha2
     update_announce_url[$version]=$announce
   done << EOL
+fp2-sibon-17.03.0  https://storage.googleapis.com/fairphone-updates/8b7402cb-9a41-4901-a00f-b0fe9f4c718a/fp2-sibon-17.03.0-manual-userdebug.zip d82b39446decb46bbb580cbd168283ce 4e3684e9b8c2854019be099c875063bc03e261250420ede2616f09e74d0eaa0d https://forum.fairphone.com/t/fairphone-open-17-03-0-is-now-available/26998
+fp2-sibon-17.02.0 - - - https://forum.fairphone.com/t/fairphone-open-17-02-0-is-now-available/26485
 fp2-sibon-17.01.0 https://storage.googleapis.com/fairphone-updates/90aa103f-4296-4777-ace9-bdd43c6790ce/fp2-sibon-17.01.0-manual-userdebug.zip 82e9ffadd9add5f73d2dfe2bec90867e 4b8310a4bd0ed6a137c2ef910ad1a7498b92955d50ae4bd48ebdae2036042eae https://forum.fairphone.com/t/fairphone-open-17-01-0-is-now-available-beware-with-encryption/26269
 fp2-sibon-16.12.0 https://storage.googleapis.com/fairphone-updates/a3f25298-dd8e-430a-a198-2be103ae710c/fp2-sibon-16.12.0-manual-userdebug.zip c210a5573a8593429c5ea345534f4770 84de6e265419c001c2de6c1251c3139f852cdef5586dda7bb499434e673ad00f https://forum.fairphone.com/t/fairphone-open-16-12-0-is-now-available/24895
 fp2-sibon-16.11.0 https://storage.googleapis.com/fairphone-updates/3e8ac604-3cfd-41c1-8fd5-5fd6158e8a37/fp2-sibon-16.11.0-manual-userdebug.zip e4de7faca12a4160efc972c8ccb91c0e 763275aa10c83425aac343d604d3ce28a7baaf564ee58b2b7dc6dc2225a0878f https://forum.fairphone.com/t/fairphone-open-16-11-0-release/24005
@@ -47,7 +49,7 @@ fp2-sibon-16.07.1 - - - https://forum.fairphone.com/t/fp-open-os-16-07-is-now-av
 fp2-sibon-16.04.0 - - - https://forum.fairphone.com/t/fairphone-2-open-os-is-available/17208
 EOL
 
-  fp_open_versions=("open_16.04.0" "fp2-sibon-16.07.1" "fp2-sibon-16.08.0" "fp2-sibon-16.09.0" "fp2-sibon-16.10.0" "fp2-sibon-16.11.0" "fp2-sibon-16.12.0" "fp2-sibon-17.01.0")
+  fp_open_versions=("open_16.04.0" "fp2-sibon-16.07.1" "fp2-sibon-16.08.0" "fp2-sibon-16.09.0" "fp2-sibon-16.10.0" "fp2-sibon-16.11.0" "fp2-sibon-16.12.0" "fp2-sibon-17.01.0" "fp2-sibon-17.02.0" "fp2-sibon-17.03.0")
 
   mkdir -p "$download_dir"
   if [[ -f "$sh_file" ]]
